@@ -110,7 +110,25 @@ jobs:
         uses: azure/k8s-set-context@v4
         with:
           method: kubeconfig
-          kubeconfig: ${{ secrets.KUBECONFIG }}
+          kubeconfig: '${{ secrets.KUBECONFIG }}'
       
       - name: Verify kubectl and kubeconfig
         run: kubectl version -o yaml
+
+      - name: Get Ingres IP
+        run: echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].ip})" >> $GITHUB_ENV
+      
+      - name: replace Placeholders
+        uses: cschleiden/replace-tokens@v1.3
+        with:
+          tokenPrefix: '_{_'
+          tokenSuffix: '_}_'
+          files: '["kubernetes/development/*.yaml"]'
+        env:
+          NAMESPACE: ${{ vars.NAMESPACE }}
+          REPLICAS: ${{ vars.REPLICAS }}
+          IMAGE: ghcr.io/vinaysudani/solar-system:${{ github.sha }}
+          INGRESS_IP: ${{ vars.INGRESS_IP }}
+      
+      - name: check updated files
+        run: cat kubernetes/development/*.yaml
