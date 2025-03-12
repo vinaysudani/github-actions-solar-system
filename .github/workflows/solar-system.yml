@@ -102,7 +102,9 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Setup Kubectl
-        uses: azure/setup-kubectl@v1.28.1
+        uses: azure/setup-kubectl@v4
+        with:
+          version: v1.28.1
         
       - name: Setup Kubeconfig
         uses: azure/k8s-set-context@v4
