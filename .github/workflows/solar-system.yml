@@ -132,3 +132,9 @@ jobs:
       
       - name: check updated files
         run: cat kubernetes/development/*.yaml
+
+    integration-testing:
+      name: Integration Testing
+      uses: ./.github/workflows/reusable-workflow.yml
+      with:
+        ingress-url: ${{ needs.dev-deploy.outputs.APP_INGRESS_URL }}
